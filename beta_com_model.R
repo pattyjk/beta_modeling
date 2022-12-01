@@ -1,0 +1,17 @@
+setwd("./Github/")
+
+meta<-read.delim("becker_map.txt", header=T)
+data<-read.delim("becker_table.txt", header=T, row.names=1)
+
+install.packages('calibrate')
+install.packages('gplots')
+install.packages('indicspecies')
+install.packages('limma 3.26.9')
+install.packages('mass') 
+install.packages('outliers')
+install.packages('reshape2')
+install.packages('reldist')
+install.packages('bipartite')
+install.packages('GUniFrac')
+install.packages('ape')
+install.packages('phangorn')
