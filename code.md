@@ -1,4 +1,3 @@
-```
 setwd("./Github/")
 
 
@@ -170,7 +169,7 @@ min(rowSums(comm.t))
 com.rare<-as.data.frame(rrarefy(comm.t, sample=19000))
 
 #calculate for total community
-total_com_rank<-rankabundance(com.rare)
+#total_com_rank<-rankabundance(com.rare)
 
 #calculate for infected/not infected
 infected.rows<-meta[which(meta$Infection=="infected"),]
@@ -183,12 +182,56 @@ com.uninfect<-com.rare[uninfected.rows$SampleID,]
 uninfected_rank<-rankabundance(com.uninfect)
 infected_rank<-rankabundance(com.infect)
 
+#make dataframes
+uninfected_rank<-data.frame(uninfected_rank)
+infected_rank<-data.frame(infected_rank)
+
 #add ASV names as a column
+uninfected_rank$ASV<-'N/A'
+infected_rank$ASV<-'N/A'
 uninfected_rank$ASV<-row.names(uninfected_rank)
 infected_rank$ASV<-row.names(infected_rank)
 
 #rename a few columns for merging
-names(infected_rank)<-c("Infected_rank",  "Infected_abun",  "Infected_plower",  "Infected_pupper",  "Infected_accumfreq",  "Infected_logabun",  "Infected_rankfreq")
+names(infected_rank)<-c("Infected_rank",  "Infected_abun", "Infected_proportion",  "Infected_plower",  "Infected_pupper",  "Infected_accumfreq",  "Infected_logabun",  "Infected_rankfreq", "ASV")
+ranky<-merge(infected_rank, uninfected_rank, by="ASV")
 
+#sort data by order in rank in infected population
+ranky<-ranky[order(ranky$rank),]
+plot(ranky$Infected_rank, ranky$rank, ylab='Uninfected Rank', xlab='Infected Rank')
+cor.test(ranky$Infected_rank, ranky$rank)
 
-```
+#chi square test
+ranky2<-ranky[, c("Infected_rank", 'rank')]
+set.seed(0505)
+chi_out<-ranky2 %>%
+  rowwise() %>% 
+  mutate(
+    test_stat = chisq.test(c(Infected_rank, rank))$statistic,
+    p_val = chisq.test(c(Infected_rank, rank))$p.value
+  )
+
+#filter out not significant values
+length(which(chi_out$p_val>=0.05))
+#1193
+
+chi_out_not_sig<-chi_out[which(chi_out$p_val>=0.05),]
+chi_out<-chi_out[-which(chi_out$p_val>0.05),]
+
+#add the abundance data back in
+ranky3<-merge(ranky, chi_out, by='rank', all.x=F)
+ranky4<-merge(ranky, chi_out_not_sig, by='rank')
+
+#proportion of community that sig. changes in rank
+sum(ranky3$proportion)
+#39.9 for uninfected
+
+sum(ranky3$Infected_proportion)
+#34.7 for infected
+
+#proportion of community that doesn't sig. changes in rank
+sum(ranky4$proportion)
+#39.9 for uninfected
+
+sum(ranky4$Infected_proportion)
+#34.7 for infected
