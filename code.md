@@ -1,3 +1,4 @@
+```
 setwd("./Github/")
 
 
@@ -54,7 +55,7 @@ infect.model<-sncm.fit(com.infect, pool = NULL, stats=T, taxon=NULL)
 uninfected.rows<-meta[which(meta$Infection=="uninfected"),]
 com.uninfect<-com.rare[uninfected.rows$SampleID,]
 uninfect.model<-sncm.fit(com.uninfect, pool = NULL, stats=T, taxon=NULL)
-
+```
 
 
 
