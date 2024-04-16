@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 ```
 setwd("./Github/")
 
@@ -24,7 +29,7 @@ library(ggplot2)
 library(vegan)
 
 #read in meta data, ASV table, taxonomic assignments
-meta<-read.delim("becker_map.txt", header=T)
+meta<-read.delim("beta_modeling/becker_map.txt", header=T)
 comm<-read.delim("becker_table.txt", header=T, row.names=1)
 
 #transpose matrix
@@ -58,7 +63,7 @@ uninfect.model<-sncm.fit(com.uninfect, pool = NULL, stats=T, taxon=NULL)
 ```
 
 
-
+```
 #beta null models
 source("MetacommunityDynamicsFctsOikos.R")
 source("PANullDevFctsOikos.R")
